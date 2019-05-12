@@ -6,11 +6,22 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
@@ -34,9 +45,9 @@ import constant.InetConfig;
 import constant.MessageType;
 import pojo.UserPojo;
 import pojo.message.ChatMessage;
+import pojo.message.FileMessage;
 import pojo.message.LoginMessage;
 import pojo.message.OfflineMessage;
-import pojo.message.RegisterMessage;
 import utils.ui.JTextPaneUtils;
 
 import javax.swing.*;
@@ -320,9 +331,20 @@ public class Client extends JFrame {
 					JOptionPane.showMessageDialog(Client.this, "未选择任何文件");
 					return;
 				}
-				
-				
-				
+				FileMessage fm = new FileMessage();
+				fm.setDstId(dstUserName);
+				Iterator<UserPojo> iterator = userlist.iterator();
+				while(iterator.hasNext()) {
+					UserPojo next = iterator.next();
+					if(next.getId().equals(dstUserName)) {
+						fm.setDstIp(next.getIp());
+						break;
+					}
+				}
+				fm.setSrcId(localUserName);
+				fm.setFileName(selectedFile.getAbsolutePath());
+				fm.setType(MessageType.FILE_SEND);
+				UDPSocket.sendMsg(fm);
 				
 			}
 		});
@@ -394,21 +416,97 @@ public class Client extends JFrame {
 			        		onlinUserDlm.addElement(up.getId());
 			        	
 			        	// 文件请求的消息
-			        	} else if (MessageType.FILE.equals(type)) {
-			        		
-			        		
+			        	} else if (MessageType.FILE_SEND.equals(type)) {
+			        		FileMessage fm = JSON.parseObject(receiveMsg, FileMessage.class);
+			        		String fileSize = String.valueOf(fm.getFileSize() / 1024) + "KB";
+			        		int result = JOptionPane.showConfirmDialog(Client.this,
+			        				"是否接收来自" + fm.getSrcId() + "的 " + new File(fm.getFileName()).getName() + "(" + fileSize + ")文件", "提示!",
+			        				JOptionPane.YES_NO_OPTION);
+			        		if(result == 0) {
+			        			ServerSocket serverSocket;
+			        			try {
+			        				serverSocket = new ServerSocket(0);// 打开一个随机端口
+			        				String address = serverSocket.getInetAddress().getHostAddress();
+			        				int port = serverSocket.getLocalPort();
+			        				
+				        			fm.setType(MessageType.FILE_REPLY_YES);
+				        			fm.setSrcPort(port);
+				        			fm.setSrcIp(address);
+				        			fm.setDstIp(dp.getAddress().getHostAddress());
+				        			UDPSocket.sendMsg(fm);
+			        				
+			        				System.out.println(address + "  " + port);
+			        				Socket client = serverSocket.accept();
+			        				new Thread() {
+										@Override
+										public void run() {
+											try {
+												System.out.println("小样:"+client.getInetAddress().getHostAddress());
+												//3.获取输入流,读取客户端发来数据
+												InputStream in = client.getInputStream();
+												//4.创建文件的输出流,把数据写到文件中
+												String picName = "D:\\"+System.currentTimeMillis()+".png";
+												FileOutputStream fos = new FileOutputStream(picName);
+												//5.循环 从输入流读取客户端数据, 写入到文件中
+												byte[] bs = new byte[1024];
+												int len = 0;
+												while((len=in.read(bs))!=-1){
+													fos.write(bs, 0, len);
+												}//1小时
+												System.out.println("客户端的文件已经保存完毕,可以查看了"+picName);
+												//6.告知客户端,文件真的真的真的上传成功
+												try {
+													Thread.sleep(10000);
+												} catch (InterruptedException e) {
+													e.printStackTrace();
+												}
+												OutputStream out = client.getOutputStream();
+												out.write("true".getBytes(charset));
+												client.close();
+												in.close();
+												out.close();
+												fos.close();
+											} catch (IOException e) {
+												e.printStackTrace();
+											}
+										}
+			        				}.start();
+			        			} catch (IOException e) {
+			        				e.printStackTrace();
+			        			}
+			        		}
+			        	} else if (MessageType.FILE_REPLY_YES.equals(type)) {
+			        		FileMessage fm = JSON.parseObject(receiveMsg, FileMessage.class);
+			        		//1.创建Socket对象,连接服务器
+			        		Socket client = new Socket(fm.getSrcId(), fm.getSrcPort());
+			        		System.out.println("连接服务器成功..");
+			        		//2.获取输出流,把数据写向服务器
+			        		OutputStream out = client.getOutputStream();
+			        		//3.创建文件的输入流,读取本地的文件数据
+			        		FileInputStream fis = new FileInputStream(fm.getFileName());
+			        		//4.循环,读取本地文件,写到服务器
+			        		byte[] sendBs = new byte[1024];
+			        		int sendLen = 0;
+			        		while((sendLen=fis.read(sendBs))!=-1){
+			        			out.write(sendBs, 0, sendLen);
+			        		}
+			        		//关闭输出流
+			        		client.shutdownOutput();
+			        		//5.获取服务器反馈的信息
+			        		InputStream in = client.getInputStream();
+			        		byte[] bs1 = new byte[1024];
+			        		int len1 = in.read(bs1);
+			        		System.out.println("服务器说:" + new String(bs1,0,len1));
+			        		//6关闭
+			        		client.close();
+			        		out.close();
+			        		fis.close();
 			        	}
-			        	
 			        }
-					
 				}
-				
-				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		
 	}
-	
 }

@@ -18,14 +18,14 @@ public class FileMessage extends Message{
 	
 	private String md5;
 	
-	private String reqOrRes;
+	private String type;
 	
-	public String getReqOrRes() {
-		return reqOrRes;
+	public String getType() {
+		return type;
 	}
 
-	public void setReqOrRes(String reqOrRes) {
-		this.reqOrRes = reqOrRes;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getFileName() {

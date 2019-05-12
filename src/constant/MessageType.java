@@ -10,10 +10,12 @@ public class MessageType {
 	
 	public static String ROOT = "00";
 	public static String CHAT = "01";
-	public static String FILE = "02";
+	public static String FILE_SEND = "02";
 	public static String REGISTER = "03";
 	public static String CLIENT_STATE = "04";
 	public static String LOGIN = "05";
 	public static String OFFLINE = "06";
+	public static String FILE_REPLY_YES = "07";
+	public static String FILE_REPLY_NO = "08";
 	
 }
