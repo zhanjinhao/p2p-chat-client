@@ -396,7 +396,7 @@ public class Client extends JFrame {
 			        		
 			        		ChatMessage chatMessage = JSON.parseObject(receiveMsg, ChatMessage.class);
 			        		String content = chatMessage.getDstId() + " 说：  " + chatMessage.getContent();
-			        		JTextPaneUtils.printTextLog(textPaneMsgRecord, content, Color.blue);
+			        		JTextPaneUtils.printTextLog(textPaneMsgRecord, content + "\r\n", Color.blue);
 			        		
 			        	// 某客户端下线的消息
 			        	} else if (MessageType.OFFLINE.equals(type)) {
