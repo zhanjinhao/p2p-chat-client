@@ -13,6 +13,7 @@ import pojo.message.ChatMessage;
 import pojo.message.LoginMessage;
 import pojo.message.Message;
 import pojo.message.OfflineMessage;
+import sun.util.logging.resources.logging;
 
 public class UDPSocket{
 
@@ -32,6 +33,7 @@ public class UDPSocket{
 	public static void sendMsg(Message msg) {
 		
 		String string = JSONObject.toJSONString(msg);
+		System.out.println(string);
 		byte[] bs = string.getBytes(charset);
 		try {
 			DatagramPacket dp = new DatagramPacket(bs, bs.length, InetAddress.getByName(msg.getDstIp()), InetConfig.CLIENT_CHAT_PORT);
@@ -39,6 +41,15 @@ public class UDPSocket{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+	}
+	
+	public static void main(String[] args) {
+		
+		LoginMessage lm = new LoginMessage();
+		lm.setDstIp("192.168.43.248");
+		lm.setId("00000000");
+		UDPSocket.sendMsg(lm);
 		
 	}
 	
@@ -86,17 +97,5 @@ public class UDPSocket{
 		}
 		
 	}
-	
-	public static void main(String[] args) {
-		
-		ChatMessage cm = new ChatMessage();
-		cm.setContent("123132");
-		cm.setDstId("123123.1231");
-		Message m = cm;
-		String jsonString = JSONObject.toJSONString(m);
-		System.out.println(jsonString);
-	
-	}
-	
 	
 }

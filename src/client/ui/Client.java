@@ -208,7 +208,7 @@ public class Client extends JFrame {
 									userlist.put(next);
 									onlinUserDlm.addElement(next.getId());
 									LoginMessage tempLm = new LoginMessage();
-									tempLm.setDstId(next.getIp());
+									tempLm.setDstIp(next.getIp());
 									tempLm.setId(next.getId());
 									UDPSocket.sendMsg(tempLm);
 									
