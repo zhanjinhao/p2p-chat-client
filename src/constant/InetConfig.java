@@ -1,6 +1,5 @@
 package constant;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ResourceBundle;
