@@ -235,6 +235,9 @@ public class Client extends JFrame {
 				            sendBuff=ByteBuffer.wrap(JSONObject.toJSONString(om).getBytes(charset)); //字符串包装到缓冲区
 							clientChannel.write(sendBuff);
 							recvBuff.clear(); 	//清空接收缓冲区
+							
+							UDPSocket.sendMsg(om);
+							
 							System.exit(0);
 						}
 					}
