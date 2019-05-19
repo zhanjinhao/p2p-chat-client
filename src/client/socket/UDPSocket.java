@@ -9,7 +9,6 @@ import java.nio.charset.Charset;
 import com.alibaba.fastjson.JSONObject;
 
 import constant.InetConfig;
-import constant.MessageType;
 import pojo.message.ChatMessage;
 import pojo.message.LoginMessage;
 import pojo.message.Message;

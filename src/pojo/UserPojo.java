@@ -54,5 +54,9 @@ public class UserPojo {
 	public int hashCode() {
 		return this.id.hashCode();
 	}
-	
+
+	@Override
+	public String toString() {
+		return "UserPojo [id=" + id + ", name=" + name + ", ip=" + ip + "]";
+	}
 }

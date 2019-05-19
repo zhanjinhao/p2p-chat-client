@@ -6,13 +6,8 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +17,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
@@ -95,7 +89,6 @@ public class Client extends JFrame {
 			}
 		});
 	}
-
 
 	/**
 	 * Create the frame.
@@ -204,14 +197,20 @@ public class Client extends JFrame {
 								
 								// 将服务器发过来的用户存在客户端 且 将用户id显示在面板上 且 通知其他所有的客户端自己上线
 								Iterator<UserPojo> iterator = userArray.iterator();
+								
+								int i = 0;
+								
 								while(iterator.hasNext()) {
 									UserPojo next = iterator.next();
+									
+									System.out.println((i++) + "   " + next);
+									
 									userlist.put(next);
 									onlinUserDlm.addElement(next.getId());
-									
 									LoginMessage tempLm = new LoginMessage();
 									tempLm.setDstId(next.getIp());
-									UDPSocket.sendLoginMsg(tempLm);
+									tempLm.setId(next.getId());
+									UDPSocket.sendMsg(tempLm);
 									
 								}
 								
@@ -360,7 +359,6 @@ public class Client extends JFrame {
 		@Override
 		public void run() {
 			try {
-				
 				System.out.println("开始监听 UDP 端口:   ");
 				
 				// 监听消息接受端口
@@ -383,6 +381,9 @@ public class Client extends JFrame {
 			        // 无法解码成JSONObject对象 表示接受到的不是 JSON 字符串
 			        if(recvObj != null)
 			        	type = (String)recvObj.get("type");
+			        
+			        System.out.println("收到的消息格式：     " + type);
+			        
 			        // 能正确解码的字符串才能 进入其他过程
 			        if(type != null) {
 			        	
@@ -392,7 +393,6 @@ public class Client extends JFrame {
 			        		ChatMessage chatMessage = JSON.parseObject(receiveMsg, ChatMessage.class);
 			        		String content = chatMessage.getSrcId() + " 说：  " + chatMessage.getContent();
 			        		JTextPaneUtils.printTextLog(textPaneMsgRecord, content, Color.blue);
-			        		
 			        		
 			        	// 某客户端下线的消息
 			        	} else if (MessageType.OFFLINE.equals(type)) {
@@ -413,6 +413,9 @@ public class Client extends JFrame {
 			        		up.setId(loginMessage.getId());
 			        		up.setIp(sendAddress.getHostAddress());
 			        		userlist.put(up);
+			        		
+			        		System.out.println(loginMessage.getId() + "上线后，userList:" + userlist);
+			        		
 			        		onlinUserDlm.addElement(up.getId());
 			        	
 			        	// 文件请求的消息
