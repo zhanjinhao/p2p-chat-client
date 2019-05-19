@@ -458,7 +458,7 @@ public class Client extends JFrame {
 												int len = 0;
 												while((len=in.read(bs))!=-1){
 													fos.write(bs, 0, len);
-												}//1小时
+												}
 												System.out.println("客户端的文件已经保存完毕,可以查看了"+picName);
 												//6.告知客户端,文件真的真的真的上传成功
 												try {
@@ -484,8 +484,8 @@ public class Client extends JFrame {
 			        	} else if (MessageType.FILE_REPLY_YES.equals(type)) {
 			        		FileMessage fm = JSON.parseObject(receiveMsg, FileMessage.class);
 			        		//1.创建Socket对象,连接服务器
-			        		Socket client = new Socket(fm.getSrcId(), fm.getSrcPort());
-			        		System.out.println("连接服务器成功..");
+			        		Socket client = new Socket(dp.getAddress(), fm.getSrcPort());
+			        		System.out.println("连接服务器成功...");
 			        		//2.获取输出流,把数据写向服务器
 			        		OutputStream out = client.getOutputStream();
 			        		//3.创建文件的输入流,读取本地的文件数据
