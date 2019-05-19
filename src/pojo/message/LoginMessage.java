@@ -1,5 +1,7 @@
 package pojo.message;
 
+import java.io.File;
+
 import constant.MessageType;
 
 /**
@@ -35,4 +37,12 @@ public class LoginMessage extends Message{
 	public String toString() {
 		return "LoginMessage [id=" + id + ", pwd=" + pwd + ", type=" + type + "]";
 	}
+	
+	public static void main(String[] args) {
+		
+		String name = new File("C:\\Users\\ISJINHAO\\Desktop\\160341237实验报告.pdf").getName();
+		System.out.println(name);
+		
+	}
+	
 }

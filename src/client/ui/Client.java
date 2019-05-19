@@ -447,30 +447,21 @@ public class Client extends JFrame {
 										@Override
 										public void run() {
 											try {
-												System.out.println("小样:"+client.getInetAddress().getHostAddress());
 												//3.获取输入流,读取客户端发来数据
 												InputStream in = client.getInputStream();
 												//4.创建文件的输出流,把数据写到文件中
-												String picName = "D:\\"+System.currentTimeMillis()+".png";
-												FileOutputStream fos = new FileOutputStream(picName);
+												String fileName = "D:\\"+new File(fm.getFileName()).getName();
+												FileOutputStream fos = new FileOutputStream(fileName);
 												//5.循环 从输入流读取客户端数据, 写入到文件中
 												byte[] bs = new byte[1024];
 												int len = 0;
 												while((len=in.read(bs))!=-1){
 													fos.write(bs, 0, len);
+													fos.flush();
 												}
-												System.out.println("客户端的文件已经保存完毕,可以查看了"+picName);
-												//6.告知客户端,文件真的真的真的上传成功
-												try {
-													Thread.sleep(10000);
-												} catch (InterruptedException e) {
-													e.printStackTrace();
-												}
-												OutputStream out = client.getOutputStream();
-												out.write("true".getBytes(charset));
+												JTextPaneUtils.printTextLog(textPaneMsgRecord, fileName + "已经传输完成！", Color.red);
 												client.close();
 												in.close();
-												out.close();
 												fos.close();
 											} catch (IOException e) {
 												e.printStackTrace();
@@ -489,21 +480,20 @@ public class Client extends JFrame {
 			        		//2.获取输出流,把数据写向服务器
 			        		OutputStream out = client.getOutputStream();
 			        		//3.创建文件的输入流,读取本地的文件数据
-			        		FileInputStream fis = new FileInputStream(fm.getFileName());
+			        		File tempFile = new File(fm.getFileName());
+			        		FileInputStream fis = new FileInputStream(tempFile);
+			        		
 			        		//4.循环,读取本地文件,写到服务器
 			        		byte[] sendBs = new byte[1024];
 			        		int sendLen = 0;
 			        		while((sendLen=fis.read(sendBs))!=-1){
+			        			System.out.println(sendLen);
 			        			out.write(sendBs, 0, sendLen);
+			        			out.flush();
 			        		}
+			        		JTextPaneUtils.printTextLog(textPaneMsgRecord, tempFile.getName() + " 文件传输完成！", Color.red);
 			        		//关闭输出流
 			        		client.shutdownOutput();
-			        		//5.获取服务器反馈的信息
-			        		InputStream in = client.getInputStream();
-			        		byte[] bs1 = new byte[1024];
-			        		int len1 = in.read(bs1);
-			        		System.out.println("服务器说:" + new String(bs1,0,len1));
-			        		//6关闭
 			        		client.close();
 			        		out.close();
 			        		fis.close();
