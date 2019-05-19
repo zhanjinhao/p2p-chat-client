@@ -209,7 +209,7 @@ public class Client extends JFrame {
 									onlinUserDlm.addElement(next.getId());
 									LoginMessage tempLm = new LoginMessage();
 									tempLm.setDstIp(next.getIp());
-									tempLm.setId(next.getId());
+									tempLm.setId(localUserName);
 									UDPSocket.sendMsg(tempLm);
 									
 								}
@@ -346,6 +346,7 @@ public class Client extends JFrame {
 				fm.setSrcId(localUserName);
 				fm.setFileName(selectedFile.getAbsolutePath());
 				fm.setType(MessageType.FILE_SEND);
+				fm.setFileSize(selectedFile.length());
 				UDPSocket.sendMsg(fm);
 				
 			}
@@ -394,7 +395,7 @@ public class Client extends JFrame {
 			        	if (MessageType.CHAT.equals(type)) {
 			        		
 			        		ChatMessage chatMessage = JSON.parseObject(receiveMsg, ChatMessage.class);
-			        		String content = chatMessage.getSrcId() + " 说：  " + chatMessage.getContent();
+			        		String content = chatMessage.getDstId() + " 说：  " + chatMessage.getContent();
 			        		JTextPaneUtils.printTextLog(textPaneMsgRecord, content, Color.blue);
 			        		
 			        	// 某客户端下线的消息
@@ -459,7 +460,7 @@ public class Client extends JFrame {
 													fos.write(bs, 0, len);
 													fos.flush();
 												}
-												JTextPaneUtils.printTextLog(textPaneMsgRecord, fileName + "已经传输完成！", Color.red);
+												JTextPaneUtils.printTextLog(textPaneMsgRecord, fileName + "已经传输完成！\r\n", Color.red);
 												client.close();
 												in.close();
 												fos.close();
@@ -491,7 +492,7 @@ public class Client extends JFrame {
 			        			out.write(sendBs, 0, sendLen);
 			        			out.flush();
 			        		}
-			        		JTextPaneUtils.printTextLog(textPaneMsgRecord, tempFile.getName() + " 文件传输完成！", Color.red);
+			        		JTextPaneUtils.printTextLog(textPaneMsgRecord, tempFile.getName() + " 文件传输完成！\r\n", Color.red);
 			        		//关闭输出流
 			        		client.shutdownOutput();
 			        		client.close();
