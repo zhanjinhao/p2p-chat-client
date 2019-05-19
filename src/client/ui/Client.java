@@ -484,6 +484,7 @@ public class Client extends JFrame {
 			        		File tempFile = new File(fm.getFileName());
 			        		FileInputStream fis = new FileInputStream(tempFile);
 			        		
+			        		
 			        		//4.循环,读取本地文件,写到服务器
 			        		byte[] sendBs = new byte[1024];
 			        		int sendLen = 0;
