@@ -301,6 +301,7 @@ public class Client extends JFrame {
 					cm.setDstId(dstUserName);
 					
 					Iterator<UserPojo> iterator = userlist.iterator();
+					
 					while(iterator.hasNext()) {
 						UserPojo next = iterator.next();
 						if(next.getId().equals(dstUserName)) {
@@ -308,6 +309,10 @@ public class Client extends JFrame {
 							break;
 						}
 					}
+					
+					String msgRecord = dateFormat.format(new Date()) + "，向" + dstUserName + "说：" + cm.getContent() + "\r\n";
+					JTextPaneUtils.printTextLog(textPaneMsgRecord, msgRecord, Color.red);
+					textFieldMsgToSend.setText("");
 					UDPSocket.sendMsg(cm);
 				}
 			}
