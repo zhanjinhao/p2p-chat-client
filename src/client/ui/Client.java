@@ -193,18 +193,11 @@ public class Client extends JFrame {
 								JTextPaneUtils.printTextLog(textPaneMsgRecord, msgRecord, Color.red);
 								
 								List<UserPojo> userArray = JSONArray.parseArray(serverReply, UserPojo.class);
-								System.out.println(userArray);
-								
 								// 将服务器发过来的用户存在客户端 且 将用户id显示在面板上 且 通知其他所有的客户端自己上线
 								Iterator<UserPojo> iterator = userArray.iterator();
 								
-								int i = 0;
-								
 								while(iterator.hasNext()) {
 									UserPojo next = iterator.next();
-									
-									System.out.println((i++) + "   " + next);
-									
 									userlist.put(next);
 									onlinUserDlm.addElement(next.getId());
 									LoginMessage tempLm = new LoginMessage();
@@ -458,6 +451,7 @@ public class Client extends JFrame {
 												//4.创建文件的输出流,把数据写到文件中
 												String fileName = "D:\\"+new File(fm.getFileName()).getName();
 												FileOutputStream fos = new FileOutputStream(fileName);
+												JTextPaneUtils.printTextLog(textPaneMsgRecord, new Date() + "  " + fileName + "已经传输开始！\r\n", Color.red);
 												//5.循环 从输入流读取客户端数据, 写入到文件中
 												byte[] bs = new byte[1024];
 												int len = 0;
